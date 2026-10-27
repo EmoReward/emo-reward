@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emo Rewards</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#101827;
+  color:white;
+  padding:20px;
+}
+.header{text-align:center;padding:15px}
+.logo{font-size:45px}
+h1{margin:8px;color:#35e0a1}
+.card{
+  background:#1c293d;
+  padding:20px;
+  border-radius:18px;
+  margin:15px 0;
+}
+.balance{text-align:center;font-size:34px;font-weight:bold;color:#35e0a1}
+.label{text-align:center;color:#c5d0df}
+button{
+  width:100%;padding:14px;margin-top:12px;
+  border:0;border-radius:12px;
+  background:#35e0a1;color:#102016;
+  font-weight:bold;font-size:16px;
+}
+.task{
+  background:#26364d;padding:14px;
+  margin:10px 0;border-radius:12px;
+}
+.small{color:#c5d0df;font-size:13px}
+button:disabled{background:#64748b;color:white}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">🎁</div>
+  <h1>EMO REWARDS</h1>
+  <p>Complete tasks. Earn points.</p>
+</div>
+
+<div class="card">
+  <p class="label">YOUR DEMO BALANCE</p>
+  <div class="balance"><span id="balance">0</span> EMO</div>
+  <p class="small" style="text-align:center">Demo points only — not real money.</p>
+</div>
+
+<div class="card">
+  <h2>⚡ Daily Reward</h2>
+  <p>Collect your daily demo points.</p>
+  <button id="dailyBtn" onclick="dailyReward()">Claim 50 Points</button>
+</div>
+
+<div class="card">
+  <h2>📋 Tasks</h2>
+  <div class="task">
+    <b>🎯 Explore Emo Rewards</b>
+    <p class="small">Try out your new rewards app.</p>
+    <button onclick="completeTask()">Complete Demo Task (+20)</button>
+  </div>
+  <div class="task">
+    <b>👥 Invite Friends</b>
+    <p class="small">Referral rewards will be added later.</p>
+    <button onclick="alert('Referral system is coming soon!')">Referral System</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2>ℹ️ About</h2>
+  <p>Welcome to Emo Rewards!</p>
+  <p class="small">This is an early demo. Points are stored on this device and have no cash value. Real accounts, verified tasks, referrals and withdrawals require a secure backend.</p>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+
+let balance = Number(localStorage.getItem("emoBalance") || 0);
+let dailyClaimed = localStorage.getItem("emoDailyClaimed") === new Date().toDateString();
+let taskDone = localStorage.getItem("emoTaskDone") === "true";
+
+function update(){
+  document.getElementById("balance").textContent=balance;
+  document.getElementById("dailyBtn").disabled=dailyClaimed;
+  document.getElementById("dailyBtn").textContent=dailyClaimed?"Already Claimed":"Claim 50 Points";
+}
+function save(){
+  localStorage.setItem("emoBalance",balance);
+  update();
+}
+function dailyReward(){
+  if(dailyClaimed)return;
+  balance+=50;
+  dailyClaimed=true;
+  localStorage.setItem("emoDailyClaimed",new Date().toDateString());
+  save();
+  alert("You collected 50 demo points!");
+}
+function completeTask(){
+  if(taskDone){
+    alert("You already completed this demo task.");
+    return;
+  }
+  balance+=20;
+  taskDone=true;
+  localStorage.setItem("emoTaskDone","true");
+  save();
+  alert("Demo task completed! +20 points.");
+}
+update();
+</script>
+</body>
+</html>
