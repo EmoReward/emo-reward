@@ -115,6 +115,43 @@ function completeTask(){
   alert("Demo task completed! +20 points.");
 }
 update();
+async function testEmoRewardsBackend() {
+  const notice = document.getElementById("notice");
+  const tg = window.Telegram?.WebApp;
+
+  if (!tg || !tg.initData) {
+    if (notice) notice.textContent = "Please open Emo Rewards inside Telegram.";
+    return;
+  }
+
+  try {
+    const result = await fetch(
+      "https://cqgnnwwnurwafojrdnv.supabase.co/functions/v1/emo-rewards",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ initData: tg.initData })
+      }
+    );
+
+    const data = await result.json();
+
+    if (notice) {
+      notice.textContent = result.ok
+        ? "Backend connected. Telegram identity verified."
+        : "Backend response: " + (data.error || "Please check the setup.");
+    }
+
+    console.log("Emo Rewards backend test:", data);
+  } catch (error) {
+    if (notice) notice.textContent = "Connection failed. Please try again.";
+    console.error(error);
+  }
+}
+
+testEmoRewardsBackend();
 </script>
 </body>
 </html>
