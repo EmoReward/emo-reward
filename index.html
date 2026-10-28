@@ -115,43 +115,102 @@ function completeTask(){
   alert("Demo task completed! +20 points.");
 }
 update();
-async function testEmoRewardsBackend() {
+ functi
+  async function emoRewardsRequest(action) {
   const notice = document.getElementById("notice");
   const tg = window.Telegram?.WebApp;
 
   if (!tg || !tg.initData) {
-    if (notice) notice.textContent = "Please open Emo Rewards inside Telegram.";
-    return;
+    if (notice) {
+      notice.textContent = "Please open Emo Rewards inside Telegram.";
+    }
+    return null;
   }
 
   try {
     const result = await fetch(
-      "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
+      "https://cqgnnwwnurwafojrdnv.supabase.co/functions/v1/super-action",
       {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=UTF-8"
         },
-        body: JSON.stringify({ initData: tg.initData })
+        body: JSON.stringify({
+          initData: tg.initData,
+          action: action
+        })
       }
     );
 
     const data = await result.json();
 
-    if (notice) {
-      notice.textContent = result.ok
-        ? "Backend connected. Telegram identity verified."
-        : "Backend response: " + (data.error || "Please check the setup.");
+    if (!result.ok || !data.success) {
+      throw new Error(data.error || "Request failed.");
     }
 
-    console.log("Emo Rewards backend test:", data);
+    return data;
   } catch (error) {
-    if (notice) notice.textContent = "Connection error: " + error.message;
-    console.error(error);
+    if (notice) notice.textContent = "Error: " + error.message;
+    return null;
   }
-                     }
-  document.getElementById("notice").textContent = "Checking backend connection...";
-testEmoRewardsBackend();
+}
+
+async function loadEmoRewardsBalance() {
+  const notice = document.getElementById("notice");
+  if (notice) notice.textContent = "Loading your points...";
+
+  const data = await emoRewardsRequest("balance");
+
+  if (!data) return;
+
+  if (notice) {
+    notice.textContent = "Your balance: " +
+      (data.profile.points || 0) + " points";
+  }
+}
+
+async function claimEmoRewardsDaily() {
+  const notice = document.getElementById("notice");
+  const button = document.getElementById("claimDailyReward");
+
+  if (button) button.disabled = true;
+  if (notice) notice.textContent = "Claiming your daily reward...";
+
+  const data = await emoRewardsRequest("claim");
+
+  if (data && notice) {
+    notice.textContent = data.dailyReward.message;
+  }
+
+  await loadEmoRewardsBalance();
+
+  if (button) button.disabled = false;
+}
+
+function setupEmoRewards() {
+  const notice = document.getElementById("notice");
+
+  if (!notice) return;
+
+  let button = document.getElementById("claimDailyReward");
+
+  if (!button) {
+    button = document.createElement("button");
+    button.id = "claimDailyReward";
+    button.textContent = "Claim Daily Reward (+50 points)";
+    button.style.display = "block";
+    button.style.margin = "15px auto";
+    button.style.padding = "12px 20px";
+    button.style.cursor = "pointer";
+    notice.insertAdjacentElement("afterend", button);
+  }
+
+  button.addEventListener("click", claimEmoRewardsDaily);
+
+  loadEmoRewardsBalance();
+}
+
+setupEmoRewards();
 </script>
 </body>
 </html>
