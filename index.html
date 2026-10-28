@@ -130,6 +130,46 @@ update();
     }
     return null;
   }
+async function emoRewardsRequest(action) {
+  const notice = document.getElementById("notice");
+  const tg = window.Telegram?.WebApp;
+
+  if (!tg || !tg.initData) {
+    if (notice) {
+      notice.textContent = "Please open Emo Rewards inside Telegram.";
+    }
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
+        body: JSON.stringify({
+          initData: tg.initData,
+          action: action
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      console.error("Emo Rewards error:", data);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Request failed:", error);
+    return null;
+  }
+}
+
 async function loadEmoRewardsTasks() {
   const list = document.getElementById("tasksList");
 
@@ -162,7 +202,8 @@ async function loadEmoRewardsTasks() {
     title.textContent = task.title;
 
     const description = document.createElement("p");
-    description.textContent = task.description || "Complete this task to earn points.";
+    description.textContent =
+      task.description || "Complete this task to earn points.";
 
     const points = document.createElement("p");
     points.textContent = "Reward: " + task.points + " points";
@@ -170,7 +211,9 @@ async function loadEmoRewardsTasks() {
     card.append(title, description, points);
     list.appendChild(card);
   });
- loadEmoRewardsTasksks(); 
+}
+
+loadEmoRewardsTasks();
   try {
     const result = await fetch(
       "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
