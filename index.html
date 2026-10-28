@@ -146,7 +146,7 @@ async function testEmoRewardsBackend() {
 
     console.log("Emo Rewards backend test:", data);
   } catch (error) {
-    if (notice) notice.textContent = "Connection failed. Please try again.";
+    if (notice) notice.textContent = "Connection error: " + error.message;
     console.error(error);
   }
 }
