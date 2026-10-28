@@ -171,6 +171,7 @@ async function loadEmoRewardsTasks() {
     list.appendChild(card);
   });
 }
+   loadEmoRewardsTasks(); 
   try {
     const result = await fetch(
       "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
