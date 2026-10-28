@@ -211,37 +211,98 @@ async function loadEmoRewardsTasks() {
     card.append(title, description, points);
     list.appendChild(card);
   });
+ }
+async function loadEmoRewardsTasks() {
+  const list = document.getElementById("tasksList");
+  if (!list) return;
+
+  list.textContent = "Loading tasks...";
+
+  const data = await emoRewardsRequest("tasks");
+
+  if (!data || !data.success) {
+    list.textContent = "Unable to load tasks. Please try again.";
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data.tasks || data.tasks.length === 0) {
+    list.textContent = "No tasks are available right now.";
+    return;
+  }
+
+  data.tasks.forEach((task) => {
+    const card = document.createElement("div");
+    card.style.padding = "12px";
+    card.style.marginBottom = "10px";
+    card.style.border = "1px solid #35e0a1";
+    card.style.borderRadius = "8px";
+
+    const title = document.createElement("h3");
+    title.textContent = task.title;
+
+    const description = document.createElement("p");
+    description.textContent =
+      task.description || "Complete this task to earn points.";
+
+    const points = document.createElement("p");
+    points.textContent = "Reward: " + task.points + " points";
+
+    const joinLink = document.createElement("a");
+    joinLink.href = "https://t.me/EmoRewardsOfficial";
+    joinLink.textContent = "Join Telegram Channel";
+    joinLink.target = "_blank";
+    joinLink.rel = "noopener noreferrer";
+    joinLink.style.display = "block";
+    joinLink.style.marginBottom = "12px";
+
+    const button = document.createElement("button");
+    button.textContent = "Complete Task";
+    button.style.padding = "10px";
+    button.style.cursor = "pointer";
+
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      button.textContent = "Verifying membership...";
+
+      try {
+        const response = await fetch(
+          "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify({
+              initData: tg.initData,
+              action: "complete_task",
+              taskId: task.id
+            })
+          }
+        );
+
+        const result = await response.json();
+
+        alert(result.message || "Please try again.");
+
+        if (result.success) {
+          await loadEmoRewardsBalance();
+        }
+      } catch (error) {
+        alert("Unable to verify your task. Please try again.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Complete Task";
+      }
+    });
+
+    card.append(title, description, points, joinLink, button);
+    list.appendChild(card);
+  });
 }
 
 loadEmoRewardsTasks();
-  try {
-    const result = await fetch(
-      "https://cqgnnwwnurwaafokrdnv.supabase.co/functions/v1/super-action",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8"
-        },
-        body: JSON.stringify({
-          initData: tg.initData,
-          action: action
-        })
-      }
-    );
-
-    const data = await result.json();
-
-    if (!result.ok || !data.success) {
-      throw new Error(data.error || "Request failed.");
-    }
-
-    return data;
-  } catch (error) {
-    if (notice) notice.textContent = "Error: " + error.message;
-    return null;
-  }
-}
-
 async function loadEmoRewardsBalance() {
   const notice = document.getElementById("notice");
   if (notice) notice.textContent = "Loading your points...";
