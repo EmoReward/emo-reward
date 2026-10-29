@@ -156,7 +156,7 @@ async function emoRewardsRequest(action) {
       }
     );
 
-    const data = await response.json();
+    cofunctionnst data = await response.json();
 
     if (!response.ok || data.success === false) {
       console.error("Emo Rewards error:", data);
@@ -170,48 +170,7 @@ async function emoRewardsRequest(action) {
   }
 }
 
-async function loadEmoRewardsTasks() {
-  const list = document.getElementById("tasksList");
 
-  if (!list) return;
-
-  list.textContent = "Loading tasks...";
-
-  const data = await emoRewardsRequest("tasks");
-
-  if (!data) {
-    list.textContent = "Unable to load tasks. Please try again.";
-    return;
-  }
-
-  list.replaceChildren();
-
-  if (!data.tasks || data.tasks.length === 0) {
-    list.textContent = "No tasks are available right now.";
-    return;
-  }
-
-  data.tasks.forEach((task) => {
-    const card = document.createElement("div");
-    card.style.padding = "12px";
-    card.style.marginBottom = "10px";
-    card.style.border = "1px solid #35e0a1";
-    card.style.borderRadius = "8px";
-
-    const title = document.createElement("h3");
-    title.textContent = task.title;
-
-    const description = document.createElement("p");
-    description.textContent =
-      task.description || "Complete this task to earn points.";
-
-    const points = document.createElement("p");
-    points.textContent = "Reward: " + task.points + " points";
-
-    card.append(title, description, points);
-    list.appendChild(card);
-  });
- }
 async function loadEmoRewardsTasks() {
   const list = document.getElementById("tasksList");
   if (!list) return;
