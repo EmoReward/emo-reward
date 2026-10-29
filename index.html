@@ -120,17 +120,7 @@ function completeTask(){
   alert("Demo task completed! +20 points.");
 }
 update();
-  async function emoRewardsRequest(action) {
-  const notice = document.getElementById("notice");
-  const tg = window.Telegram?.WebApp;
-
-  if (!tg || !tg.initData) {
-    if (notice) {
-      notice.textContent = "Please open Emo Rewards inside Telegram.";
-    }
-    return null;
-  }
-async function emoRewardsRequest(action) {
+ async function emoRewardsRequest(action) {
   const notice = document.getElementById("notice");
   const tg = window.Telegram?.WebApp;
 
@@ -155,7 +145,9 @@ async function emoRewardsRequest(action) {
         })
       }
     );
-const data = await response.json();
+
+    const data = await response.json();
+
     if (!response.ok || data.success === false) {
       console.error("Emo Rewards error:", data);
       return null;
@@ -167,8 +159,6 @@ const data = await response.json();
     return null;
   }
 }
-
-
 async function loadEmoRewardsTasks() {
   const list = document.getElementById("tasksList");
   if (!list) return;
