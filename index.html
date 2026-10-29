@@ -155,9 +155,7 @@ async function emoRewardsRequest(action) {
         })
       }
     );
-
-    cofunctionnst data = await response.json();
-
+const data = await response.json();
     if (!response.ok || data.success === false) {
       console.error("Emo Rewards error:", data);
       return null;
