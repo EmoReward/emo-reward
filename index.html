@@ -318,6 +318,48 @@ function setupEmoRewards() {
 }
 
 setupEmoRewards();
+let emoReferralLink = "";
+
+async function loadReferralStats() {
+  const data = await emoRewardsRequest("referral_stats");
+
+  if (!data || !data.referral) return;
+
+  emoReferralLink = data.referral.link;
+
+  document.getElementById("referralCode").textContent = data.referral.code;
+  document.getElementById("invitedCount").textContent = data.referral.invitedCount;
+  document.getElementById("referralPoints").textContent = data.referral.pointsEarned;
+}
+
+document.getElementById("copyReferral").addEventListener("click", async () => {
+  if (!emoReferralLink) {
+    alert("Referral link is still loading.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(emoReferralLink);
+    alert("Referral link copied!");
+  } catch {
+    alert("Unable to copy the link.");
+  }
+});
+
+document.getElementById("shareReferral").addEventListener("click", () => {
+  if (!emoReferralLink) {
+    alert("Referral link is still loading.");
+    return;
+  }
+
+  const shareUrl = "https://t.me/share/url?url=" +
+    encodeURIComponent(emoReferralLink) +
+    "&text=" + encodeURIComponent("Join Emo Rewards and earn points with me!");
+
+  window.open(shareUrl, "_blank");
+});
+
+loadReferralStats();
 </script>
 </body>
 </html>
